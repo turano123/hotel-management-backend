@@ -16,13 +16,10 @@ const uploadDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
+  destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    const unique = `${file.fieldname}-${Date.now()}${ext}`;
-    cb(null, unique);
+    cb(null, `${file.fieldname}-${Date.now()}${ext}`);
   }
 });
 
@@ -55,22 +52,17 @@ router.post(
         tourismCertNo
       } = req.body;
 
-      // ⚠️ Vergi levhası zorunlu
       if (!req.files?.vergiFile) {
         return res.status(400).json({ msg: 'Vergi levhası yüklenmesi zorunludur.' });
       }
 
-      // ✅ E-posta kontrolü
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ msg: 'Bu e-posta zaten kayıtlı.' });
       }
 
-      // 🔐 Şifreyi hashle
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-      // ✅ Yeni kullanıcı oluştur
       const newUser = new User({
         firstName,
         lastName,
@@ -119,7 +111,7 @@ router.post('/login', async (req, res) => {
       expiresIn: '1d'
     });
 
-    return res.json({
+    return res.status(200).json({
       token,
       email: user.email,
       name: `${user.firstName} ${user.lastName}`,

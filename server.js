@@ -8,13 +8,11 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS Ayarları
+// ✅ CORS Ayarları (sadece canlı domain izinli)
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'http://localhost:3000',
-      'https://hotel-management-frontend-zmec.vercel.app',
-      'https://tatillenofficial.com'
+      process.env.CLIENT_URL // https://tatillenofficial.com
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
