@@ -10,14 +10,21 @@ const app = express();
 
 // ✅ CORS Ayarları
 const corsOptions = {
-  origin: [
-    process.env.CLIENT_URL || 'http://localhost:3000',
-    'https://hotel-management-frontend-zmec.vercel.app',
-    'https://tatillenofficial.com'
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://hotel-management-frontend-zmec.vercel.app',
+      'https://tatillenofficial.com'
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS hatası: Erişime izin verilmiyor.'));
+    }
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
