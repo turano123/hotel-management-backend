@@ -28,13 +28,24 @@ router.get('/', authenticate, async (req, res) => {
   }
 });
 
+// 🔍 Tek müşteri getir
+router.get('/:id', authenticate, async (req, res) => {
+  try {
+    const customer = await Customer.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!customer) return res.status(404).json({ error: 'Müşteri bulunamadı' });
+    res.json(customer);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // 🔄 Müşteri güncelle
 router.put('/:id', authenticate, async (req, res) => {
   try {
     const updated = await Customer.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
       req.body,
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!updated) return res.status(404).json({ error: 'Müşteri bulunamadı' });
     res.json(updated);

@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -54,12 +53,12 @@ router.post(
         tourismCertNo
       } = req.body;
 
-      // Vergi levhası zorunlu kontrol
+      // Vergi levhası zorunlu
       if (!req.files || !req.files.vergiFile) {
         return res.status(400).json({ msg: 'Vergi levhası yüklenmesi zorunludur.' });
       }
 
-      // Zaten kayıtlı mı?
+      // Kullanıcı zaten var mı?
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ msg: 'Bu e-posta zaten kayıtlı.' });
@@ -83,7 +82,9 @@ router.post(
         tourismCert,
         tourismCertNo: tourismCert === 'Var' ? tourismCertNo : '',
         vergiFile: req.files.vergiFile[0].filename,
-        turizmFile: tourismCert === 'Var' && req.files.turizmFile ? req.files.turizmFile[0].filename : ''
+        turizmFile: tourismCert === 'Var' && req.files.turizmFile
+          ? req.files.turizmFile[0].filename
+          : ''
       });
 
       await newUser.save();

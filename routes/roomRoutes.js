@@ -1,8 +1,9 @@
-// routes/roomRoutes.js
+// 📁 routes/roomRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Room = require('../models/room'); // 🔥 küçük harfle düzelttik
+const Room = require('../models/room'); // ✅ küçük harfle dosya adı düzeltildi
 const authenticate = require('../middleware/authMiddleware');
 
 // ➕ Oda oluştur
@@ -65,7 +66,7 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
-// 🚫 Satışı aç/kapat
+// 🚫 Tüm satışları kapat / aç
 router.patch('/:id/closed', authenticate, async (req, res) => {
   const { closedAll } = req.body;
   if (typeof closedAll !== 'boolean')
@@ -84,7 +85,7 @@ router.patch('/:id/closed', authenticate, async (req, res) => {
   }
 });
 
-// 📆 Belirli aralığı kapat
+// 📆 Belirli tarih aralığını kapat
 router.post('/:id/closed-period', authenticate, async (req, res) => {
   const { start, end } = req.body;
   if (!start || !end)

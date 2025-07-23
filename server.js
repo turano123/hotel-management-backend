@@ -6,62 +6,65 @@ const multer   = require('multer');
 const path     = require('path');
 require('dotenv').config();
 
-// Express app tanımı
+// Express app oluştur
 const app = express();
 
-// ✅ GÜNCELLENMİŞ CORS AYARI (Preflight dahil)
+// ✅ Gelişmiş CORS ayarları
 const corsOptions = {
   origin: [
     'http://localhost:3000',
-    'https://hotel-management-frontend-zmec.vercel.app'
+    'https://hotel-management-frontend-zmec.vercel.app',
+    'https://tatillenofficial.com' // Gerekirse domainin eklenir
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   optionsSuccessStatus: 200
 };
-
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Preflight istekleri için şart
+app.options('*', cors(corsOptions)); // Preflight CORS fix
 
-// Middleware'ler
+// 📦 Body parser middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Uploads klasörü (görsel dosyalar için)
+// 📁 Upload klasörü static servis
 const uploadDir = path.join(__dirname, 'uploads');
 app.use('/uploads', express.static(uploadDir));
 
-// Rotalar
+// 📌 Routes
 const authRoutes         = require('./routes/authRoutes');
 const protectedRoutes    = require('./routes/protectedRoutes');
 const roomRoutes         = require('./routes/roomRoutes');
 const reservationRoutes  = require('./routes/reservationRoutes');
 const customerRoutes     = require('./routes/customerRoutes');
 
-// Route kullanım
-app.use('/api/auth', authRoutes);                // Giriş & Kayıt işlemleri
-app.use('/api/rooms', roomRoutes);               // Odalar
-app.use('/api/reservations', reservationRoutes); // Rezervasyonlar
-app.use('/api/customers', customerRoutes);       // Müşteri yönetimi
-app.use('/api', protectedRoutes);                // Korumalı test rotası
+// 🔗 Route kullanımı
+app.use('/api/auth', authRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/reservations', reservationRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api', protectedRoutes);
 
-// Ana test endpoint (opsiyonel)
+// ✅ Test endpoint
 app.get('/', (_req, res) => res.send('Hotel Management API çalışıyor 🚀'));
 
-// .env'den değerleri al
+// 🔐 Ortam değişkenleri
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-// MongoDB bağlantısı
-mongoose.connect(MONGODB_URI)
-  .then(() => {
-    console.log('✅ MongoDB bağlantısı başarılı');
-    app.listen(PORT, () =>
-      console.log(`✅ Server http://localhost:${PORT} üzerinde çalışıyor`)
-    );
-  })
-  .catch(err => {
-    console.error('❌ MongoDB bağlantı hatası:', err);
-    process.exit(1);
+// 🔗 MongoDB bağlantısı
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log('✅ MongoDB bağlantısı başarılı');
+  app.listen(PORT, () => {
+    console.log(`🚀 Server http://localhost:${PORT} üzerinde çalışıyor`);
   });
+})
+.catch((err) => {
+  console.error('❌ MongoDB bağlantı hatası:', err.message);
+  process.exit(1);
+});
