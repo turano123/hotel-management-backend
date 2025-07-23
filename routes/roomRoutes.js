@@ -2,15 +2,15 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Room = require('../models/Room');
-const authenticate = require('../middleware/authMiddleware'); // ✅ Dosya adı düzeltildi
+const Room = require('../models/room'); // 🔥 küçük harfle düzelttik
+const authenticate = require('../middleware/authMiddleware');
 
 // ➕ Oda oluştur
 router.post('/', authenticate, async (req, res) => {
   try {
     const room = await Room.create({
       ...req.body,
-      userId: req.user.id // ✅ o kullanıcıya ait odalar
+      userId: req.user.id
     });
     res.status(201).json(room);
   } catch (err) {
@@ -21,7 +21,7 @@ router.post('/', authenticate, async (req, res) => {
 // 📄 Tüm odaları getir
 router.get('/', authenticate, async (req, res) => {
   try {
-    const rooms = await Room.find({ userId: req.user.id }).lean(); // ✅ filtreleme
+    const rooms = await Room.find({ userId: req.user.id }).lean();
     res.json(rooms);
   } catch (err) {
     res.status(500).json({ error: err.message });
