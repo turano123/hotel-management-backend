@@ -8,27 +8,14 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS FIX – Yayın ve Local Destekli (Kesin Çalışır)
-const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'https://tatillenofficial.com',
-      'http://localhost:3000'
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS hatası: Bu origin kabul edilmiyor.'));
-    }
-  },
-  credentials: true,
+// ✅ CORS FIX – Geçici olarak tüm origin'lere açık (Login için garantili)
+app.use(cors({
+  origin: '*', // Geçici olarak her yerden erişime izin veriyoruz
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
-};
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Preflight isteklerini de karşıla
+app.options('*', cors()); // Preflight istekleri için destek
 
 // 📦 JSON & Form Verisi
 app.use(express.json());
