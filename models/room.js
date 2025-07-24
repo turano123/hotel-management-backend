@@ -2,15 +2,17 @@ const mongoose = require('mongoose');
 
 const roomSchema = new mongoose.Schema(
   {
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // 💡 Kullanıcıya bağlı olsun
+
     // — Temel bilgiler —
-    roomNo:     { type: String,  required: true, unique: true },
+    roomNo:     { type: String,  required: true },
     name:       { type: String,  required: true },
     bedCount:   { type: Number,  required: true },
     maxAdults:  { type: Number,  default: 0 },
     maxChildren:{ type: Number,  default: 0 },
 
-    weekPrice:     { type: Number, default: 0 },  // Hafta içi
-    weekendPrice:  { type: Number, default: 0 },  // Hafta sonu
+    weekPrice:     { type: Number, default: 0 },
+    weekendPrice:  { type: Number, default: 0 },
 
     // — Özellikler (isteğe bağlı) —
     jacuzzi:        { type: Boolean, default: false },
@@ -21,7 +23,7 @@ const roomSchema = new mongoose.Schema(
     poolWidth:      Number,
     poolHeight:     Number,
 
-    view:           [String],         // ['Dağ', 'Deniz', ...]
+    view:           [String],
     familyOnly:     { type: String, enum: ['Evet', 'Hayır'], default: 'Hayır' },
     petsAllowed:    { type: String, enum: ['Evet', 'Hayır'], default: 'Hayır' },
 
@@ -51,5 +53,8 @@ const roomSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// 💫 roomNo + userId kombinasyonu benzersiz olmalı
+roomSchema.index({ roomNo: 1, userId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Room', roomSchema);
