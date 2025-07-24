@@ -1,4 +1,3 @@
-
 // 📁 server.js
 const express  = require('express');
 const mongoose = require('mongoose');
@@ -9,7 +8,7 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS – Sadece izin verilen domain'lere açık
+// ✅ CORS – Sadece izinli domain'lere açık
 const allowedOrigins = [
   'https://tatillenofficial.com',
   'http://localhost:3000'
