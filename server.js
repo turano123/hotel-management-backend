@@ -1,3 +1,4 @@
+
 // 📁 server.js
 const express  = require('express');
 const mongoose = require('mongoose');
@@ -8,14 +9,26 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS FIX – Geçici olarak tüm origin'lere açık (Login için garantili)
+// ✅ CORS – Sadece izin verilen domain'lere açık
+const allowedOrigins = [
+  'https://tatillenofficial.com',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: '*', // Geçici olarak her yerden erişime izin veriyoruz
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS hatası: Yetkisiz origin.'));
+    }
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.options('*', cors()); // Preflight istekleri için destek
+app.options('*', cors());
 
 // 📦 JSON & Form Verisi
 app.use(express.json());
