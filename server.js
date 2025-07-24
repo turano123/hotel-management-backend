@@ -8,11 +8,11 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS Ayarları (sadece canlı domain izinli)
+// ✅ CORS Ayarları (doğrudan domain ile)
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      process.env.CLIENT_URL // örn: https://tatillenofficial.com
+      'https://tatillenofficial.com' // 💡 CLIENT_URL yerine doğrudan yazıldı
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
