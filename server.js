@@ -12,7 +12,7 @@ const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      process.env.CLIENT_URL // https://tatillenofficial.com
+      process.env.CLIENT_URL // örn: https://tatillenofficial.com
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
