@@ -8,25 +8,15 @@ require('dotenv').config();
 
 const app = express();
 
-// ✅ CORS Ayarları (doğrudan domain ile)
+// ✅ CORS FIX – En üste ve ayrı ayrı tanımlandı
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      'https://tatillenofficial.com' // 💡 CLIENT_URL yerine doğrudan yazıldı
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS hatası: Erişime izin verilmiyor.'));
-    }
-  },
+  origin: 'https://tatillenofficial.com',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight çözücü
 
 // 📦 JSON & Form Verisi
 app.use(express.json());
