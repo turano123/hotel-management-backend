@@ -84,7 +84,11 @@ router.post(
             : ''
       });
 
-      await newUser.save();
+      const savedUser = await newUser.save();
+
+      // 🟡 Kendi _id'sini companyId olarak ata
+      savedUser.companyId = savedUser._id;
+      await savedUser.save();
 
       return res.status(201).json({ msg: '✅ Kayıt başarılı!' });
     } catch (err) {
@@ -107,15 +111,24 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: 'Şifre hatalı' });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'tatillen-secret', {
-      expiresIn: '1d'
-    });
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role,
+        companyId: user.companyId || null
+      },
+      process.env.JWT_SECRET || 'tatillen-secret',
+      {
+        expiresIn: '1d'
+      }
+    );
 
     return res.status(200).json({
       token,
       email: user.email,
       name: `${user.firstName} ${user.lastName}`,
-      userId: user._id
+      userId: user._id,
+      companyId: user.companyId || null
     });
   } catch (err) {
     console.error('❌ Login Hatası:', err);

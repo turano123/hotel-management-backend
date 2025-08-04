@@ -1,38 +1,43 @@
-// models/Reservation.js
+// 📁 models/Reservation.js
 const mongoose = require('mongoose');
 
 const ReservationSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true  // 💥 Hangi kullanıcıya ait olduğu zorunlu
+    required: true
   },
-  roomNo: String,
-  customer: String,
-  checkIn: Date,
-  checkOut: Date,
-  total: Number,
-  deposit: Number,
-  remaining: Number,
-  reference: String,
-  pension: String,
-  adults: Number,
-  children: Number,
-  phone: String,
-  nationality: String,
-  tcNo: String,
-  passportNo: String,
-  extraRequestChecked: Boolean,
-  extraDescription: String,
-  extraPrice: Number,
-  notes: [String],
+  roomNo: { type: String },
+  customer: { type: String, required: true },
+  checkIn: { type: Date, required: true },
+  checkOut: { type: Date, required: true },
+  total: { type: Number, default: 0 },
+  deposit: { type: Number, default: 0 },
+  remaining: { type: Number, default: 0 },
+  reference: { type: String },
+  pension: { type: String },
+  adults: { type: Number, default: 1 },
+  children: { type: Number, default: 0 },
+  phone: { type: String },
+  nationality: { type: String },
+  tcNo: { type: String },
+  passportNo: { type: String },
+  extraRequestChecked: { type: Boolean, default: false },
+  extraDescription: { type: String },
+  extraPrice: { type: Number, default: 0 },
+  notes: [{ type: String }],
   expenses: [
     {
-      desc: String,
-      amount: Number,
-      currency: String
+      desc: { type: String },
+      amount: { type: Number, default: 0 },
+      currency: { type: String, enum: ['₺', '$', '€'], default: '₺' }
     }
-  ]
+  ],
+  companyId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company',
+    required: true
+  }
 }, {
   timestamps: true
 });

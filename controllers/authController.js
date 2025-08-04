@@ -20,16 +20,22 @@ const register = async (req, res) => {
       role,
     });
 
-    await user.save();
+    // 🟡 Önce kullanıcıyı kaydet
+    const savedUser = await user.save();
+
+    // 🔁 Kendi _id’sini companyId olarak ata
+    savedUser.companyId = savedUser._id;
+    await savedUser.save();
+
     res.status(201).json({ message: 'Kullanıcı başarıyla oluşturuldu!' });
   } catch (err) {
     res.status(500).json({ error: 'Kayıt sırasında bir hata oluştu' });
   }
 };
 
-// ✅ GİRİŞ FONKSİYONU
+// ✅ GİRİŞ FONKSİYONU (companyId dahil!)
 const login = async (req, res) => {
-  console.log("Gelen login isteği:", req.body); // 🐞 BURAYA EKLİYORUZ aşkım
+  console.log("Gelen login isteği:", req.body); // 🐞 Log
 
   const { email, password } = req.body;
 
@@ -44,8 +50,13 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Şifre yanlış' });
     }
 
+    // ✅ Token’a companyId’yi de dahil et
     const token = jwt.sign(
-      { userId: user._id, role: user.role },
+      {
+        id: user._id,
+        role: user.role,
+        companyId: user.companyId || null,
+      },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -57,6 +68,7 @@ const login = async (req, res) => {
         id: user._id,
         email: user.email,
         role: user.role,
+        companyId: user.companyId || null,
       },
     });
   } catch (err) {
