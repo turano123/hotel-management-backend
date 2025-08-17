@@ -24,22 +24,23 @@ app.disable('x-powered-by')
 app.set('trust proxy', 1)
 
 // CORS: tek origin veya virgül ile ayrılmış çoklu origin
+// .env içinde CORS_ORIGIN=https://www.tatillenofficial.com yazdık
 const RAW_ORIGINS = process.env.CORS_ORIGIN || 'http://localhost:5173'
 const ORIGIN_LIST = RAW_ORIGINS.split(',').map(s => s.trim()).filter(Boolean)
 
 const corsOptions = {
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true)              // CLI/SSR istekleri
+    if (!origin) return cb(null, true) // CLI/SSR istekleri
     if (ORIGIN_LIST.includes('*')) return cb(null, true)
     if (ORIGIN_LIST.includes(origin)) return cb(null, true)
-    return cb(new Error('Not allowed by CORS'))
+    return cb(new Error(`CORS engellendi: ${origin}`))
   },
-  credentials: false,                                // cookie kullanmıyoruz
+  credentials: false, // cookie kullanmıyoruz
   methods: ['GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: [
     'Content-Type',
     'Authorization',
-    'X-Requested-With',                              // 🔑 preflight'ın istediği
+    'X-Requested-With',
     'Accept'
   ],
   exposedHeaders: ['Content-Length','X-Request-Id'],
@@ -63,13 +64,14 @@ const apiLimiter = rateLimit({
 app.use('/api', apiLimiter)
 
 /* ---------------- Healthcheck ---------------- */
-app.get('/', (_req, res) => res.json({ ok: true, name: 'HMS Backend' }))
+app.get('/', (_req, res) => res.json({ ok: true, name: 'Tatillenofficial HMS Backend' }))
 app.get('/api/healthz', (_req, res) => {
   res.json({
     ok: true,
     uptime: process.uptime(),
     env: process.env.NODE_ENV || 'development',
     mongo: mongoose.connection.readyState, // 1 = connected
+    allowedOrigins: ORIGIN_LIST
   })
 })
 
@@ -96,7 +98,8 @@ let server
 connectDB()
   .then(() => {
     server = app.listen(PORT, () => {
-      console.log(`✅ HMS API running on http://localhost:${PORT}`)
+      console.log(`✅ HMS API running on port ${PORT}`)
+      console.log(`🌍 Allowed Origins: ${ORIGIN_LIST.join(', ')}`)
     })
   })
   .catch((err) => {
